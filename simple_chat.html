@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MindBridge Simple Chat</title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        #chat { border: 1px solid #ccc; padding: 20px; height: 400px; overflow-y: scroll; }
+        .message { margin: 10px 0; padding: 10px; border-radius: 5px; }
+        .user { background: blue; color: white; text-align: right; }
+        .bot { background: #eee; }
+    </style>
+</head>
+<body>
+    <h1>MindBridge Simple Chat</h1>
+    <div id="chat"></div>
+    <input type="text" id="input" placeholder="Type here...">
+    <button onclick="chat()">Send</button>
+
+    <script>
+        const responses = {
+            'sad': ["I'm here for you 😔", "It's okay to feel sad sometimes 💙"],
+            'anxious': ["Let's breathe together 🌬️", "You're safe right now 🛡️"],
+            'default': ["I'm listening 💙", "Tell me more 🤗"]
+        };
+
+        function chat() {
+            const input = document.getElementById('input');
+            const message = input.value.toLowerCase();
+            const chatDiv = document.getElementById('chat');
+            
+            // Add user message
+            chatDiv.innerHTML += `<div class="message user">You: ${input.value}</div>`;
+            input.value = '';
+            
+            // Bot response
+            let response = responses.default[0];
+            if (message.includes('sad')) response = responses.sad[0];
+            if (message.includes('anxious')) response = responses.anxious[0];
+            
+            setTimeout(() => {
+                chatDiv.innerHTML += `<div class="message bot">MindBridge: ${response}</div>`;
+                chatDiv.scrollTop = chatDiv.scrollHeight;
+            }, 1000);
+        }
+
+        document.getElementById('input').onkeypress = function(e) {
+            if (e.key === 'Enter') chat();
+        };
+    </script>
+</body>
+</html>
