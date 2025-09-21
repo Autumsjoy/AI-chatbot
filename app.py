@@ -6,7 +6,7 @@ import os
 # Initialize Flask app
 app = Flask(__name__)
 
-# Configuration
+# Configuration for Render
 class Config:
     PORT = int(os.environ.get('PORT', 5000))
     DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
@@ -118,7 +118,8 @@ def health_check():
         'service': 'MindBridge API',
         'version': '1.0.0',
         'python_version': '3.11.0',
-        'deployment': 'render'
+        'deployment': 'render',
+        'port': app.config['PORT']
     })
 
 @app.route('/api/chat', methods=['POST'])
@@ -164,25 +165,6 @@ if __name__ == '__main__':
     if app.config['DEBUG']:
         app.run(host='0.0.0.0', port=app.config['PORT'], debug=True)
     else:
-        from gunicorn.app.base import BaseApplication
-        
-        class FlaskApplication(BaseApplication):
-            def __init__(self, app, options=None):
-                self.options = options or {}
-                self.application = app
-                super().__init__()
-            
-            def load_config(self):
-                for key, value in self.options.items():
-                    self.cfg.set(key, value)
-            
-            def load(self):
-                return self.application
-        
-        options = {
-            'bind': f'0.0.0.0:{app.config["PORT"]}',
-            'workers': 4,
-            'timeout': 120
-        }
-        
-        FlaskApplication(app, options).run()
+        # For production, we use Gunicorn which is called from the Procfile
+        print("🏗️ Production mode - using Gunicorn via Procfile")
+        app.run(host='0.0.0.0', port=app.config['PORT'], debug=False)
